@@ -118,8 +118,8 @@ def evaluate_results_bonus(predictions_path,ground_truth_path, verbose = 0):
 verbose = 0
 
 #change this on your machine
-predictions_path_root = "..\\fisiere_solutie\\Alexe_Bogdan_331\\"
-ground_truth_path_root = "..\\..\\antrenare\\"
+predictions_path_root = "evaluare/fisiere_solutie/Alexe_Bogdan_331\\"
+ground_truth_path_root = "antrenare\\"
 
 #task1
 predictions_path = predictions_path_root + "clasic\\"
