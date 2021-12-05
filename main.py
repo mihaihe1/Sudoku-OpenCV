@@ -3,8 +3,8 @@ import numpy as np
 from collections import deque
 
 
-def show_image(title,image):
-    cv.imshow(title,image)
+def show_image(title, image):
+    cv.imshow(title, image)
     cv.waitKey(0)
     cv.destroyAllWindows()
 
@@ -68,16 +68,17 @@ def preprocess_image(image):
 def task1():
     for cnt in range(1, 21):
         if cnt < 10:
-            img = cv.imread(f"antrenare/clasic/0{cnt}.jpg")
-            f = open(f'predicted/clasic/0{cnt}_predicted.txt', 'w')
+            img = cv.imread(f"testare/clasic/0{cnt}.jpg")
+            f = open(f'Hernest_Mihai_342/clasic/0{cnt}_predicted.txt', 'w')
         else:
-            img = cv.imread(f"antrenare/clasic/{cnt}.jpg")
-            f = open(f'predicted/clasic/{cnt}_predicted.txt', 'w')
+            img = cv.imread(f"testare/clasic/{cnt}.jpg")
+            f = open(f'Hernest_Mihai_342/clasic/{cnt}_predicted.txt', 'w')
 
-        img = cv.resize(img,(0,0),fx=0.2,fy=0.2)
-        result=preprocess_image(img)
+        img = cv.resize(img, (0, 0), fx=0.2, fy=0.2)
+        result = preprocess_image(img)
 
-        points = np.float32([[result[0][0], result[0][1]], [result[1][0], result[1][1]], [result[2][0], result[2][1]], [result[3][0], result[3][1]]])
+        points = np.float32([[result[0][0], result[0][1]], [result[1][0], result[1][1]], [result[2][0], result[2][1]],
+                             [result[3][0], result[3][1]]])
         pts2 = np.float32([[0, 0], [499, 0], [0, 499], [499, 499]])
 
         matrix = cv.getPerspectiveTransform(points, pts2)
@@ -85,12 +86,12 @@ def task1():
 
         # show_image("res", res)
 
-        patch_dim = 500//9
+        patch_dim = 500 // 9
         occupied_threshold = 50
 
         for i in range(9):
             for j in range(9):
-                patch = res[i*patch_dim+15:(i+1)*patch_dim-10, j*patch_dim+15:(j+1)*patch_dim-10]
+                patch = res[i * patch_dim + 15:(i + 1) * patch_dim - 10, j * patch_dim + 15:(j + 1) * patch_dim - 10]
 
                 gray = cv.cvtColor(patch, cv.COLOR_BGR2GRAY)
                 blur = cv.GaussianBlur(gray, (5, 5), 0)
@@ -111,16 +112,17 @@ def task1():
                 # print(max1)
             if i != 8:
                 f.write("\n")
+    print("Task 1 - Finished")
 
 
 def task2():
     for cnt in range(1, 41):
         if cnt < 10:
-            img = cv.imread(f"antrenare/jigsaw/0{cnt}.jpg")
-            f = open(f'predicted/jigsaw/0{cnt}_predicted.txt', 'w')
+            img = cv.imread(f"testare/jigsaw/0{cnt}.jpg")
+            f = open(f'Hernest_Mihai_342/jigsaw/0{cnt}_predicted.txt', 'w')
         else:
-            img = cv.imread(f"antrenare/jigsaw/{cnt}.jpg")
-            f = open(f'predicted/jigsaw/{cnt}_predicted.txt', 'w')
+            img = cv.imread(f"testare/jigsaw/{cnt}.jpg")
+            f = open(f'Hernest_Mihai_342/jigsaw/{cnt}_predicted.txt', 'w')
 
         img = cv.resize(img, (0, 0), fx=0.2, fy=0.2)
         result = preprocess_image(img)
@@ -135,7 +137,6 @@ def task2():
         # show_image("res", res)
 
         patch_dim = 500 // 9
-        occupied_threshhold = 50
         color_matrix = [['x' for x in range(9)] for j in range(9)]
         occupied_matrix = [['' for x in range(9)] for j in range(9)]
         cnt_color = 0
@@ -144,21 +145,23 @@ def task2():
         for i in range(9):
             patch = res[i * patch_dim:(i + 1) * patch_dim, 0: patch_dim]
             a1 = np.mean(patch, axis=tuple(range(2)))
-            if a1.max(axis=0)-a1.min(axis=0) <= 7:
+            if a1.max(axis=0) - a1.min(axis=0) <= 7:
                 cnt_alb_negru += 1
             else:
                 cnt_color += 1
 
         if max(cnt_color, cnt_alb_negru) == cnt_color:
+            occupied_threshhold = 45
             for i in range(9):
                 for j in range(9):
-                    patch = res[i * patch_dim + 10:(i + 1) * patch_dim - 10, j * patch_dim + 10:(j + 1) * patch_dim - 10]
+                    patch = res[i * patch_dim + 10:(i + 1) * patch_dim - 10,
+                            j * patch_dim + 10:(j + 1) * patch_dim - 10]
 
                     mean = np.mean(patch, axis=tuple(range(2)))
                     # print(np.mean(patch, axis=tuple(range(2))))
                     if mean[0] == max(mean):
                         color_matrix[i][j] = 'B'
-                    elif mean[2] == max(mean) and abs(mean[2]-mean[1]) > 5:
+                    elif mean[2] == max(mean) and abs(mean[2] - mean[1]) > 5:
                         color_matrix[i][j] = 'R'
                     else:
                         color_matrix[i][j] = 'Y'
@@ -200,8 +203,9 @@ def task2():
                             viz[x][y] = 1
                             numbered_matrix[x][y] = cnt
                             for dx, dy in directions:
-                                if 0 <= x+dx <= 8 and 0 <= y+dy <= 8 and viz[x+dx][y+dy] == 0 and color_matrix[x+dx][y+dy] == color:
-                                    q.append((x+dx, y+dy))
+                                if 0 <= x + dx <= 8 and 0 <= y + dy <= 8 and viz[x + dx][y + dy] == 0 and \
+                                        color_matrix[x + dx][y + dy] == color:
+                                    q.append((x + dx, y + dy))
             for i in range(9):
                 for j in range(9):
                     f.write(str(numbered_matrix[i][j]))
@@ -209,12 +213,13 @@ def task2():
                 if i != 8:
                     f.write("\n")
         else:
+            occupied_threshhold = 50
             right_blocked = [[0 for x in range(9)] for j in range(9)]
             left_blocked = [[0 for x in range(9)] for j in range(9)]
             top_blocked = [[0 for x in range(9)] for j in range(9)]
             bottom_blocked = [[0 for x in range(9)] for j in range(9)]
 
-            threshold = 135
+            threshold = 140
             for i in range(9):
                 for j in range(9):
                     patch_margins = res[i * patch_dim:(i + 1) * patch_dim, j * patch_dim:(j + 1) * patch_dim]
@@ -312,6 +317,8 @@ def task2():
                     f.write(str(occupied_matrix[i][j]))
                 if i != 8:
                     f.write("\n")
+    print("Task 2 - Finished")
 
 
+task1()
 task2()
